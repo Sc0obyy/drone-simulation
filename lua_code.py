@@ -1,12 +1,14 @@
 from lupa import LuaRuntime
 import time
-from simulation import DroneSimulator, SIMULATION_SPEED
+from simulation import DroneSimulator, SIMULATION_SPEED, VERTICE_1, VERTICE_2, VERTICE_3, VERTICE_4
+
 
 # Initialize Lua runtime
 lua = LuaRuntime(unpack_returned_tuples=True)
 
 # Initialize Drone simulation instance
-sim = DroneSimulator()
+# sim = DroneSimulator('rectangle', {'v1': VERTICE_1, 'v2': VERTICE_2, 'v3': VERTICE_3, 'v4': VERTICE_4})
+sim = DroneSimulator('circle', {'radius': 130, 'x': 100, 'y': 0})
 
 # API functions called by Lua script
 def adjust_flight_parameters(xVelocity, yVelocity, yaw):
@@ -172,6 +174,7 @@ local function execute_survey()
         -- Reverse horizontal movement direction
         x_direction = -x_direction
     end
+    print(flight_time)
 end
 
 -- Main Script Execution
@@ -260,6 +263,83 @@ end
 execute_survey()
 end_flight()
 
+
+"""
+
+lua_code_test = """
+-- Constants
+local MAX_VELOCITY = 6  -- meters per second
+local FLIGHT_RADIUS = 130  -- meters
+local CENTER_X, CENTER_Y = 100, 0
+local ALTITUDE = 20  -- meters
+local MAX_FLIGHT_TIME = 480  -- seconds (8 minutes)
+local PHOTO_INTERVAL = 5  -- seconds between photos
+
+-- Functions
+local function within_boundaries(x, y)
+    local distance = math.sqrt((x - CENTER_X)^2 + (y - CENTER_Y)^2)
+    return distance <= FLIGHT_RADIUS
+end
+
+local function valid_compass_heading()
+    local heading = get_compass_heading()
+    while heading == 200 do  -- Retry if the value is invalid
+        pause_script_execution(1)
+        heading = get_compass_heading()
+    end
+    return heading
+end
+
+-- Flight Pattern
+local function survey_area()
+    local start_time = os.time()
+    local direction = 1  -- 1 for east, -1 for west
+    local step_size = 20  -- Distance per survey line
+    local x, y = get_x_coordinate(), get_y_coordinate()
+    local y_step = 0
+
+    while os.time() - start_time < MAX_FLIGHT_TIME do
+        if not within_boundaries(x, y) then
+            break  -- End if out of bounds
+        end
+        
+        -- Move in x direction
+        adjust_flight_parameters(direction * MAX_VELOCITY, 0, 0)
+        local move_time = step_size / MAX_VELOCITY
+        pause_script_execution(move_time)
+        take_photo()
+
+        -- Update position
+        x = get_x_coordinate()
+        y = get_y_coordinate()
+        
+        -- Check if still within boundaries
+        if not within_boundaries(x, y) then
+            break
+        end
+        
+        -- Move in y direction (north or south)
+        y_step = y_step + step_size
+        if y_step > FLIGHT_RADIUS then
+            break  -- Stop if max range is reached
+        end
+
+        adjust_flight_parameters(0, MAX_VELOCITY, 0)
+        pause_script_execution(move_time)
+        take_photo()
+
+        -- Update position
+        x = get_x_coordinate()
+        y = get_y_coordinate()
+
+        -- Reverse direction for next row
+        direction = -direction
+    end
+end
+
+-- Start mission
+survey_area()
+end_flight()
 
 """
 

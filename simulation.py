@@ -11,24 +11,33 @@ DRONE_COLOR = (0, 0, 0)
 PATH_COLOR = (255, 255, 0)
 FPS = 30
 PHOTO_COLOR = (255, 0, 0)
-PHOTO_SIZE = 35
-SIMULATION_SPEED = 20
+PHOTO_SIZE = 19
+SIMULATION_SPEED = 5
 CENTER_X = WIDTH // 2
 CENTER_Y = HEIGHT // 2
 
+VERTICE_1 = (-100, -10)
+VERTICE_2 = (-10, -10)
+VERTICE_3 = (-100, -80)
+VERTICE_4 = (-10, -80)
+
 # Drone Simulation Object
 class DroneSimulator:
-    def __init__(self, starting_pos=(0, 0)):
+    def __init__(self, boundry_shape='circle', boundry_params=None):
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Drone Simulation")
 
-        self.position = np.array(starting_pos, dtype=float)
+        self.position = np.array((0, 0), dtype=float)
         self.velocity = np.array([0, 0], dtype=float)
         self.yaw = 0
         self.path = []
         self.photos = []
         self.running = True
+        self.start_time = time.time()
+        self.flight_time = 0
+        self.boundry_shape = boundry_shape
+        self.boundry_params = boundry_params if boundry_params else {}
 
     def adjust_flight_parameters(self, xVelocity, yVelocity, yaw):
         self.velocity = np.array([xVelocity, yVelocity], dtype=float)
@@ -54,11 +63,12 @@ class DroneSimulator:
 
     def take_photo(self):
         print(f"Photo taken at ({self.position[0]}, {self.position[1]})")
-        self.photos.append(tuple(self.position.copy()))
+        self.photos.append([tuple(self.position.copy()), self.yaw])
 
     def end_flight(self):
         self.velocity = np.array([0, 0])
         self.running = False
+        self.flight_time = (time.time() - self.start_time) * SIMULATION_SPEED
 
     def update(self, delta_time):
         self.position += self.velocity * delta_time
@@ -78,17 +88,40 @@ class DroneSimulator:
         if keys[pygame.K_LEFT]: self.velocity[0] = -speed
         if keys[pygame.K_RIGHT]: self.velocity[0] = speed
 
+    def draw_boundry(self):
+        if self.boundry_shape == 'circle':
+            circle_center = self.to_screen_coords((self.boundry_params.get('x'), self.boundry_params.get('y')))
+            circle_radius= self.boundry_params.get('radius')
+            pygame.draw.circle(self.screen, (255, 0, 0), circle_center, circle_radius, 1)
+        elif self.boundry_shape == 'rectangle':
+            rectangle_vertices = [
+                self.boundry_params.get('v1'),
+                self.boundry_params.get('v2'),
+                self.boundry_params.get('v3'),
+                self.boundry_params.get('v4')
+            ]
+            screen_rect_vertices = [self.to_screen_coords(v) for v in rectangle_vertices]
+            min_x = min(v[0] for v in screen_rect_vertices)
+            max_y = max(v[1] for v in screen_rect_vertices)
+            max_x = max(v[0] for v in screen_rect_vertices)
+            min_y = min(v[1] for v in screen_rect_vertices)
+            pygame.draw.rect(self.screen, (255, 0, 0), (min_x, min_y, (max_x - min_x), (max_y - min_y)), 1)
+
     def draw(self):
         self.screen.fill(BACKGROUND_COLOR)
 
         for point in self.path:
             pygame.draw.circle(self.screen, PATH_COLOR, self.to_screen_coords(point), 2)
         for photo in self.photos:
-            pygame.draw.rect(self.screen, PHOTO_COLOR, ((self.to_screen_coords(photo)[0] - PHOTO_SIZE // 2), (self.to_screen_coords(photo)[1] - PHOTO_SIZE // 2), PHOTO_SIZE, PHOTO_SIZE), 2)
+            surf = pygame.Surface((PHOTO_SIZE, PHOTO_SIZE), pygame.SRCALPHA)
+            pygame.draw.rect(surf, PHOTO_COLOR, (0, 0, PHOTO_SIZE, PHOTO_SIZE), 2)
+            rot_surf = pygame.transform.rotate(surf, photo[1] * -1)
+            rot_rect = rot_surf.get_rect(center=self.to_screen_coords(photo[0]))
+            self.screen.blit(rot_surf, rot_rect.topleft)
 
         pygame.draw.circle(self.screen, DRONE_COLOR, self.to_screen_coords(self.position), DRONE_RADIUS)
 
-        pygame.draw.circle(self.screen, (255, 0, 0), self.to_screen_coords((100, 0)), 130, 1)
+        self.draw_boundry()
         
         pygame.display.update()
 
@@ -100,6 +133,11 @@ class DroneSimulator:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     waiting = False
+
+    def print_info(self):
+        minutes = int(self.flight_time // 60)
+        seconds = int(self.flight_time % 60)
+        print(f"Total flight time: {minutes} Minutes, {seconds} Seconds")
 
     def run(self):
         clock = pygame.time.Clock()
@@ -114,5 +152,6 @@ class DroneSimulator:
             self.update(delta_time)
             self.draw()
 
+        self.print_info()
         self.wait_for_exit()
         pygame.quit()
