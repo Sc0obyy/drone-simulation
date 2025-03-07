@@ -13,11 +13,11 @@ WIDTH, HEIGHT = 1600, 600
 BACKGROUND_COLOR = (220, 220, 220)
 DRONE_RADIUS = 1
 DRONE_COLOR = (0, 0, 0)
-PATH_COLOR = (255, 255, 0)
+PATH_COLOR = (255, 255, 0, 0.1)
 FPS = 30
-PHOTO_COLOR = (255, 0, 0, 25)
+PHOTO_COLOR = (200, 200, 200)
 PHOTO_SIZE = 19
-SIMULATION_SPEED = 50
+SIMULATION_SPEED = 25
 CENTER_X = WIDTH // 2
 CENTER_Y = HEIGHT // 2
 
@@ -104,6 +104,7 @@ class DroneSimulator:
             circle_center = self.to_screen_coords((self.boundry_params.get('x'), self.boundry_params.get('y')))
             circle_radius= self.boundry_params.get('radius')
             pygame.draw.circle(self.screen, (255, 0, 0), circle_center, circle_radius, 1)
+            self.add_circle_boundry_to_coverage_map(self.boundry_params.get('x'), self.boundry_params.get('y'), self.boundry_params.get('radius'))
         elif self.boundry_shape == 'rectangle':
             rectangle_vertices = [
                 self.boundry_params.get('v1'),
@@ -122,14 +123,15 @@ class DroneSimulator:
     def draw(self):
         self.screen.fill(BACKGROUND_COLOR)
 
-        for point in self.path:
-            pygame.draw.circle(self.screen, PATH_COLOR, self.to_screen_coords(point), 1)
         for photo in self.photos:
             surf = pygame.Surface((PHOTO_SIZE, PHOTO_SIZE), pygame.SRCALPHA)
             pygame.draw.rect(surf, PHOTO_COLOR, (0, 0, PHOTO_SIZE, PHOTO_SIZE), 0)
             rot_surf = pygame.transform.rotate(surf, photo[1] * -1)
             rot_rect = rot_surf.get_rect(center=self.to_screen_coords(photo[0]))
             self.screen.blit(rot_surf, rot_rect.topleft)
+        for point in self.path:
+            pygame.draw.circle(self.screen, PATH_COLOR, self.to_screen_coords(point), 1)
+        
 
         pygame.draw.circle(self.screen, DRONE_COLOR, self.to_screen_coords(self.position), DRONE_RADIUS)
 
@@ -150,6 +152,10 @@ class DroneSimulator:
         minutes = int(self.flight_time // 60)
         seconds = int(self.flight_time % 60)
         print(f"Total flight time: {minutes} Minutes, {seconds} Seconds")
+
+        self.add_photos_to_coverage_map()
+        self.calculate_coverage()
+        self.calculate_overlap()
 
     def add_rectangle_boundry_to_coverage_map(self, min_x, max_x, min_y, max_y):
 
@@ -201,9 +207,32 @@ class DroneSimulator:
                 area += 1
             if value > 0:
                 coverCount += 1
+                color = value_to_color(value)
+                pygame.draw.rect(self.screen, color, (i, j, 1, 1))
         
         coverage = int((coverCount / area) * 100)
         print(f"Coverage: {coverage}%")
+
+    def draw_colorbar(self, x, y, width, height, min_val=1, max_val=10, cmap_name="plasma"):
+        """ Title """
+        pygame.font.init()
+        title = pygame.font.SysFont("Arial", 20).render("Image count", True, (0, 0, 0))
+        self.screen.blit(title, (x, y - 25))
+
+        """ 10 """
+        ten = pygame.font.SysFont("Arial", 20).render(" - 10", True, (0, 0, 0))
+        self.screen.blit(ten, (x + width, y ))
+
+        """ 1 """
+        one = pygame.font.SysFont("Arial", 20).render(" - 1", True, (0, 0, 0))
+        self.screen.blit(one, (x + width, y + height - 20 ))
+    
+
+        """ Draws a vertical colormap bar on the Pygame screen """
+        for j in range(height):  # Iterate over height instead of width
+            value = min_val + ((height - j) / height) * (max_val - min_val)  # Invert Y for top-down mapping
+            color = value_to_color(value, cmap_name)
+            pygame.draw.line(self.screen, color, (x, y + j), (x + width, y + j))  # Draw horizontal lines
 
     def calculate_overlap(self):
         coveredArea = 0
@@ -214,8 +243,6 @@ class DroneSimulator:
                 coveredArea += 1
             if value > 1:
                 overlapCount += 1
-                color = value_to_color(value)
-                pygame.draw.rect(self.screen, color, (i, j, 1, 1))
 
         overlap = int((coveredArea / overlapCount) * 100)
         print(f"Overlap: {overlap}%")
@@ -234,18 +261,9 @@ class DroneSimulator:
             self.update(delta_time)
             self.draw()
 
+        self.draw_colorbar(50, int(HEIGHT / 4), 50, int(HEIGHT / 2))
         self.print_info()
-        if self.boundry_shape == 'circle':
-            self.add_circle_boundry_to_coverage_map(self.boundry_params.get('x'), self.boundry_params.get('y'), self.boundry_params.get('radius'))
-        self.add_photos_to_coverage_map()
-
-        zero_positions = np.argwhere(self.coverage_map > 0)
-        for x, y in zero_positions:
-            pygame.draw.circle(self.screen, (123, 123, 123), (x, y), 1)
-        # pygame.display.update()
-
-        self.calculate_coverage()
-        self.calculate_overlap()
+        
         for point in self.path:
             pygame.draw.circle(self.screen, PATH_COLOR, self.to_screen_coords(point), 1)
         pygame.display.update()
@@ -253,10 +271,6 @@ class DroneSimulator:
         pygame.quit()
 
 
-# zero_positions = np.argwhere(self.coverage_map == 0)
-#         for x, y in zero_positions:
-#             pygame.draw.circle(self.screen, (123, 123, 123), (x, y), 1)
-#         pygame.display.update()
 
 def rotate_point(x, y, cx, cy, angle):
     theta = np.radians(angle)
@@ -271,9 +285,12 @@ def rotate_point(x, y, cx, cy, angle):
 
     return int(round(x_rot)), int(round(y_rot))
 
-def value_to_color(value, vmin=2, vmax=10, cmap_name="plasma", alpha=128):
-    """ Maps a value to a color using a colormap (for values > 1) """
-    norm = (value - vmin) / (vmax - vmin)  # Normalize between 0 and 1
+def value_to_color(value, cmap_name="plasma", alpha=255):
+    """ Maps a value to a color using a colormap (for values > 0) """
+    if (value > 0):
+        norm = (value * 10) / 100
+    else:
+        norm = value / 100
     norm = np.clip(norm, 0, 1)  # Ensure values stay within 0-1 range
     cmap = plt.get_cmap(cmap_name)  # Get colormap
     r, g, b, _ = cmap(norm)  # Extract RGB (ignore alpha)
