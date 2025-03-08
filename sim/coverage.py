@@ -60,7 +60,9 @@ class Coverage:
             if value == 1:
                 coveredArea += 1
             if value > 1:
+                coveredArea += 1
                 overlapCount += 1
-        overlap = int((coveredArea / overlapCount) * 100) if overlapCount != 0 else 0
+        overlap = int((overlapCount / coveredArea) * 100) if overlapCount != 0 else 0
+        # overlap = int((coveredArea / overlapCount) * 100) if overlapCount != 0 else 0
         print(f"Overlap: {overlap}%")
         pygame.display.update()

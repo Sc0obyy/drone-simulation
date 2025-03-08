@@ -3,7 +3,7 @@ import argparse
 import settings
 from sim.flight import DroneFlight
 from sim.renderer import DroneRenderer
-from lua_runner import LuaRunner
+from tools.lua_runner import LuaRunner
 from sim.utils import to_screen_coords
 
 def main_simulation():
@@ -40,7 +40,7 @@ def main_simulation():
     pygame.quit()
 
 def run_prompt():
-    from prompt import create_prompt
+    from tools.prompt import create_prompt
     create_prompt()
 
 def parse_arguments():
