@@ -1,19 +1,16 @@
+from globals import *
+
 # This file makes generating a prompt easyer by providing global variables that can be changed to change the prompt
 
 # Global values
-FLIGHT_DURATION = 8
-FLIGHT_HEIGHT = 20
-GIMBAL_ANGLE = -90
-CAMERA_FOV = 82.1
-MIN_PITCH_ROLL_VALUE = -6
-MAX_PITCH_ROLL_VALUE = 6
-MIN_YAW_VALUE = -100
-MAX_YAW_VALUE = 100
-
-# VERTICE_1 = (-100, 100)
-# VERTICE_2 = (100, 100)
-# VERTICE_3 = (-100, -100)
-# VERTICE_4 = (100, -100)
+# FLIGHT_DURATION = 8
+# FLIGHT_HEIGHT = 20
+# GIMBAL_ANGLE = -90
+# CAMERA_FOV = 82.1
+# MIN_PITCH_ROLL_VALUE = -6
+# MAX_PITCH_ROLL_VALUE = 6
+# MIN_YAW_VALUE = -100
+# MAX_YAW_VALUE = 100
 
 CIRCLE_CENTERED = "circle with radius of 100 meters and center at the following coordinates (x=0,y=0)"
 CIRCLE_NOT_OFFSET = "circle with radius of 130 meters and center at the following coordinates (x=100,y=0)"

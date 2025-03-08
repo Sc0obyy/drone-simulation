@@ -3,28 +3,8 @@ import numpy as np
 import time
 import math
 import matplotlib.pyplot as plt
-
+from globals import *
 import scipy.ndimage
-
-np.set_printoptions(threshold=np.inf)
-
-# Constants
-WIDTH, HEIGHT = 1600, 600
-BACKGROUND_COLOR = (220, 220, 220)
-DRONE_RADIUS = 1
-DRONE_COLOR = (0, 0, 0)
-PATH_COLOR = (255, 255, 0, 0.1)
-FPS = 30
-PHOTO_COLOR = (200, 200, 200)
-PHOTO_SIZE = 19
-SIMULATION_SPEED = 25
-CENTER_X = WIDTH // 2
-CENTER_Y = HEIGHT // 2
-
-VERTICE_1 = (-100, -100)
-VERTICE_2 = (-100, 100)
-VERTICE_3 = (100, -100)
-VERTICE_4 = (100, 100)
 
 # Drone Simulation Object
 class DroneSimulator:
@@ -133,7 +113,7 @@ class DroneSimulator:
             pygame.draw.circle(self.screen, PATH_COLOR, self.to_screen_coords(point), 1)
         
 
-        pygame.draw.circle(self.screen, DRONE_COLOR, self.to_screen_coords(self.position), DRONE_RADIUS)
+        pygame.draw.circle(self.screen, (0, 0, 0), self.to_screen_coords(self.position), 1)
 
         self.draw_boundry()
         
