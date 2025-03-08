@@ -83,10 +83,12 @@ class DroneRenderer:
     def print_info(self) -> None:
         minutes = int(self.flight.flight_time // 60)
         seconds = int(self.flight.flight_time % 60)
+        print("\n################################\n")
         print(f"Total flight time: {minutes} Minutes, {seconds} Seconds")
         self.coverage.add_photos_to_coverage_map_n(self.flight.photos)
         self.coverage.calculate_coverage_n(self.screen)
         self.coverage.calculate_overlap_n()
+        print("\n################################\n")
 
     def wait_for_exit(self) -> None:
         print("Simulation complete. Press any key to exit...")

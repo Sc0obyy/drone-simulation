@@ -33,7 +33,7 @@ def main():
     # Draw final flight path
     for point in flight.path:
         pygame.draw.circle(renderer.screen, settings.PATH_COLOR, to_screen_coords(point), 1)
-        
+
     pygame.display.update()
     renderer.wait_for_exit()
     pygame.quit()

@@ -1,6 +1,7 @@
 from lupa import LuaRuntime
 import time
 import settings
+from sim.utils import custom_print
 
 class LuaRunner:
     def __init__(self, flight, renderer):
@@ -28,7 +29,7 @@ class LuaRunner:
             last_time = time.time()
             self.flight.update(delta_time)
             self.renderer.draw()
-        print(f"Paused for {duration} seconds")
+        custom_print(f"Paused for {duration} seconds")
 
     def load_lua_script(self) -> None:
         with open(settings.LUA_SCRIPT_PATH, 'r') as f:

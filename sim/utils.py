@@ -28,3 +28,7 @@ def to_screen_coords(pos: tuple) -> tuple:
 
 def to_world_coords(pos: tuple) -> tuple:
     return (int(pos[0] + settings.CENTER_X), int(pos[1] + settings.CENTER_Y))
+
+def custom_print(*args, **kwargs):
+    if settings.PRINT_OUTPUT:
+        print(*args, **kwargs)
