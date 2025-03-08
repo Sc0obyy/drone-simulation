@@ -1,6 +1,6 @@
 from lupa import LuaRuntime
 import time
-from simulation import DroneSimulator, SIMULATION_SPEED, VERTICE_1, VERTICE_2, VERTICE_3, VERTICE_4
+from old.simulation import DroneSimulator, SIMULATION_SPEED, VERTICE_1, VERTICE_2, VERTICE_3, VERTICE_4
 
 
 # Initialize Lua runtime

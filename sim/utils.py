@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import settings
 
-def rotate_point(x: float, y: float, cx: float, cy: float, angle: float) -> (int, int):
+def rotate_point(x: float, y: float, cx: float, cy: float, angle: float) -> tuple:
     """
     Rotate a point (x, y) around a center (cx, cy) by angle (in degrees).
     """

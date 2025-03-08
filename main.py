@@ -29,8 +29,11 @@ def main():
     renderer.draw_colorbar(50, int(settings.HEIGHT / 4), 50, int(settings.HEIGHT / 2))
     flight.end_flight()  # Record flight time
     renderer.print_info()
+
+    # Draw final flight path
     for point in flight.path:
         pygame.draw.circle(renderer.screen, settings.PATH_COLOR, to_screen_coords(point), 1)
+        
     pygame.display.update()
     renderer.wait_for_exit()
     pygame.quit()

@@ -1,4 +1,4 @@
-from globals import *
+from old.globals import *
 
 # This file makes generating a prompt easyer by providing global variables that can be changed to change the prompt
 

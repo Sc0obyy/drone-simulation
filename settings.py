@@ -6,7 +6,7 @@ CENTER_Y = HEIGHT // 2
 BACKGROUND_COLOR = (220, 220, 220)
 FPS = 30
 SIMULATION_SPEED = 25
-LUA_SCRIPT_PATH = "./script.lua"
+LUA_SCRIPT_PATH = "lua_scripts/script.lua"
 
 # Drone photo and path settings
 PHOTO_COLOR = (200, 200, 200)

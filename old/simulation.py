@@ -3,7 +3,7 @@ import numpy as np
 import time
 import math
 import matplotlib.pyplot as plt
-from globals import *
+from old.globals import *
 import scipy.ndimage
 
 # Drone Simulation Object
