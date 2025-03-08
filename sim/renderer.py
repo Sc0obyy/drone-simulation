@@ -11,8 +11,8 @@ class DroneRenderer:
         pygame.init()
         self.screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
         pygame.display.set_caption("Drone Simulation")
-        self.boundary_shape = settings.BOUNDRY_SHAPE
-        self.boundary_params = settings.BOUNDRY_PARAMS
+        self.boundary_shape = settings.BOUNDARY_SHAPE
+        self.boundary_params = settings.BOUNDARY_PARAMS
         self.coverage = Coverage()
     
     def draw(self) -> None:

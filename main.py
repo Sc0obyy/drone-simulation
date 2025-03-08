@@ -1,11 +1,12 @@
 import pygame
+import argparse
 import settings
 from sim.flight import DroneFlight
 from sim.renderer import DroneRenderer
 from lua_runner import LuaRunner
 from sim.utils import to_screen_coords
 
-def main():
+def main_simulation():
     # Initialize flight and renderer objects
     flight = DroneFlight()
     renderer = DroneRenderer(flight)
@@ -38,5 +39,25 @@ def main():
     renderer.wait_for_exit()
     pygame.quit()
 
+def run_prompt():
+    from prompt import create_prompt
+    create_prompt()
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description="Drone Simulator Application\n\n"
+                    "By default (no arguments), the simualtion will run with settings from settings.py",
+        epilog="Example usage:\n"
+                " python main.py           # Runs the simulation\n"
+                " python main.py --prompt  # Creates a prompt with setting from settings.py",
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+    parser.add_argument("-p", "--prompt", action="store_true", help="Create the required Prompt (doesn't run simulation)")
+    return parser.parse_args()
+
 if __name__ == '__main__':
-    main()
+    args = parse_arguments()
+    if args.prompt:
+        run_prompt()
+    else:
+        main_simulation()
