@@ -39,9 +39,9 @@ def main_simulation():
     renderer.wait_for_exit()
     pygame.quit()
 
-def run_prompt():
+def run_prompt(settings_file=None, output_file="prompt.txt"):
     from tools.prompt import create_prompt
-    create_prompt()
+    create_prompt(settings_file, output_file)
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -49,15 +49,19 @@ def parse_arguments():
                     "By default (no arguments), the simualtion will run with settings from settings.py",
         epilog="Example usage:\n"
                 " python main.py           # Runs the simulation\n"
-                " python main.py --prompt  # Creates a prompt with setting from settings.py",
+                " python main.py --prompt  # Creates a prompt with setting from settings.py\n"
+                " python main.py --prompt -s custom_settings.py # Creates a prompt with custom settings"
+                " python main.py --prompt --output custom_prompt.txt  # Saves the prompt to a different file",
         formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument("-p", "--prompt", action="store_true", help="Create the required Prompt (doesn't run simulation)")
+    parser.add_argument("-s", "--settings", type=str, help="Specify a custom settings file (default: settings.py)")
+    parser.add_argument("-o", "--output", type=str, default="prompt.txt", help="Specify output filename (default: prompt.txt)")
     return parser.parse_args()
 
 if __name__ == '__main__':
     args = parse_arguments()
     if args.prompt:
-        run_prompt()
+        run_prompt(args.settings, args.output)
     else:
         main_simulation()

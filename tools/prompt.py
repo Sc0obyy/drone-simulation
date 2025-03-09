@@ -1,8 +1,17 @@
 from settings import *
 
+import importlib.util
+
+def load_settings(settings_file="settings.py"):
+    spec = importlib.util.spec_from_file_location("settings", settings_file)
+    settings = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(settings)
+    return settings
+
 # This file makes generating a prompt easyer by providing global variables that can be changed to change the prompt
 
-def create_prompt():
+def create_prompt(settings_file=None, output_file="prompt.txt"):
+    settings = load_settings(settings_file if settings_file else "settings.py")
 
     BP = BOUNDARY_PARAMS # Shorten code below
     if BOUNDARY_SHAPE == 'circle':
@@ -44,7 +53,7 @@ Instructions:
 Develop the Lua script to ensure the drone remains within the boundary throughout the flight. Select an efficient and effective pattern for surveying the designated area. Implement error handling for failed compass heading retrievals by attempting a retry before any critical operations. The script should respect the {FLIGHT_DURATION} minute flight duration limit, utilizing the pause_script_execution function to control the timing of flight adjustments.
 """
 
-    with open("prompt.txt", "w") as file:
+    with open(output_file, "w") as file:
         file.write(prompt)
 
-    print("Created 'prompt.txt'")
+    print("Created {output_file}")
