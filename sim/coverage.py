@@ -1,7 +1,7 @@
 import pygame
 import numpy as np
 import settings
-from sim.utils import to_world_coords, rotate_point, value_to_color
+from sim.utils import rotate_point, value_to_color, to_screen_coords
 
 class Coverage:
     def __init__(self):
@@ -15,7 +15,7 @@ class Coverage:
 
     def add_circle_boundary_to_coverage_map_n(self, x: float, y: float, radius: float) -> None:
         point = (x, y)
-        point = to_world_coords(point)
+        point = to_screen_coords(point)
         x, y = point
         for i in range(int(x - radius), int(x + radius) + 1):
             for j in range(int(y - radius), int(y + radius) + 1):
@@ -25,6 +25,7 @@ class Coverage:
     def add_photos_to_coverage_map_n(self, photos: list) -> None:
         for photo in photos:
             center = photo[0]
+            center = to_screen_coords(center)
             half_size = settings.PHOTO_SIZE // 2
             photo_array = np.empty((settings.PHOTO_SIZE, settings.PHOTO_SIZE), dtype=object)
             for i in range(settings.PHOTO_SIZE):
@@ -35,7 +36,6 @@ class Coverage:
             angle = photo[1]
             rotated_photo = [rotate_point(x, y, center[0], center[1], angle) for x, y in photo_array.flat]
             for p in rotated_photo:
-                p = to_world_coords(p)
                 x, y = p
                 if self.coverage_map[int(x), int(y)] >= 0:
                     self.coverage_map[int(x), int(y)] += 1

@@ -2,7 +2,7 @@ import pygame
 import numpy as np
 import matplotlib.pyplot as plt
 import settings
-from sim.utils import rotate_point, value_to_color, to_screen_coords, to_world_coords
+from sim.utils import value_to_color, to_screen_coords
 from sim.coverage import Coverage
 
 class DroneRenderer:
