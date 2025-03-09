@@ -1,0 +1,30 @@
+
+        Imagine you are a drone operator and your job is to develop a Lua script to control a drone during a survey mission over a designated area. The script must be complete and ready for immediate execution, with no adjustments needed post-delivery. The mission requires the drone to stay within defined boundaries and take photographs for analysis.
+
+        Note: All functions listed below are already implemented. You should call these functions directly in your script.
+        
+        Coordinate System:
+        The coordinate system used is a Cartesian plane with the x-axis oriented east (positive) to west (negative) and the y-axis oriented north (positive) to south (negative). The origin of the coordinate system is the drone's starting location. All coordinates are measured in meters.
+        
+        Flight Objective:
+        Thoroughly survey the designated area and capture photographs periodically to ensure adequate area coverage without unnecessary overlap.
+
+        Drone Flight Constraints:
+        - The drone must stay within designated boundaries, which for this task is a circle with radius of 130 meters and center at the following coordinates (100, 0)
+        - The total flight duration must not exceed 8 minutes.
+        - The drone will maintain a constant height of 20 meters, has a gimbal with a pitch angle of -90 degrees and a 82.1 FOV camera, which influence the frequency of photo captures.
+        Note that the camera FOV of 82.1 refers only to the horizontal FOV. The drone can only capture images in an aspect ratio of 16:9. The resulting photos should be square, thus cropping the edges. The Photo will cover roughly 19x19m of area.
+
+        Functions:
+        - `adjust_flight_parameters(xVelocity, yVelocity, yaw)`: controls the drone's flight direction. `xVelocity` with value range [-6, 6] controls velocity along the x-axis (positive values move the drone east, negative west), and `yVelocity` with value range [-6, 6] controls velocity along the y-axis (positive values move the drone north, negative south). `yaw` with value range [-100, 100] changes the drone's angular velocity (positive values rotate the drone clockwise, negative counterclockwise)
+        `xVelocity` and `yVelocity` are both in meters/s and yaw is in degrees/s. The drone maintains these flight parameters until they are changed by another call to this function. 
+        - `pause_script_execution(duration)`: pauses the script execution for a specified duration in seconds. This function is typically used after setting flight parameters to maintain the drone’s current direction and speed for the specified period before the next script command is executed.
+        - `get_distance_to_origin()`: retrieves the distance in meters from the drone’s current location to the origin of the coordinate system.
+        - `get_x_coordinate()`, `get_y_coordinate()`: retrieves the x-coordinate and y-coordinate in meters of the drone's current location.
+        - `get_compass_heading()`: retrieves the compass heading as double. The north is 0 degrees, the east is 90 degrees. The value range is [-180,180]. Returns 200 when compass heading value couldn't be retrieved.
+        - `take_photo()`: instructs the drone to capture and save a photograph. The script should plan these captures to balance coverage with storage limitations
+        - `end_flight()`: instructs the drone to return to its starting point and terminate the flight.
+
+        Instructions:
+        Develop the Lua script to ensure the drone remains within the boundary throughout the flight. Select an efficient and effective pattern for surveying the designated area. Implement error handling for failed compass heading retrievals by attempting a retry before any critical operations. The script should respect the 8 minute flight duration limit, utilizing the pause_script_execution function to control the timing of flight adjustments.
+    
