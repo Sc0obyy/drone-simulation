@@ -12,19 +12,14 @@ LUA_SCRIPT_PATH = "lua_scripts/script.lua"
 PHOTO_COLOR = (200, 200, 200)
 PHOTO_SIZE = 19
 PATH_COLOR = (255, 255, 0, 0.1)
+
+# Shape and size of area
 BOUNDARY_SHAPE = 'circle'
 BOUNDARY_PARAMS = {
     "x": 100,
     "y": 0,
     "radius": 130
 }
-# BOUNDARY_SHAPE = 'rectangle'
-# BOUNDARY_PARAMS= {
-#     'v1': (-100, -100),
-#     'v2': (-100, 100),
-#     'v3': (100, -100),
-#     'v4': (100, 100)
-# }
 
 # Prompt settings
 FLIGHT_DURATION = 8

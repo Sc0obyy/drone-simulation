@@ -1,5 +1,4 @@
 from settings import *
-
 import importlib.util
 
 def load_settings(settings_file="settings.py"):
@@ -56,4 +55,4 @@ Develop the Lua script to ensure the drone remains within the boundary throughou
     with open(output_file, "w") as file:
         file.write(prompt)
 
-    print("Created {output_file}")
+    print(f"Created '{output_file}'")

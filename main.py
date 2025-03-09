@@ -50,7 +50,7 @@ def parse_arguments():
         epilog="Example usage:\n"
                 " python main.py           # Runs the simulation\n"
                 " python main.py --prompt  # Creates a prompt with setting from settings.py\n"
-                " python main.py --prompt -s custom_settings.py # Creates a prompt with custom settings"
+                " python main.py --prompt -s custom_settings.py # Creates a prompt with custom settings\n"
                 " python main.py --prompt --output custom_prompt.txt  # Saves the prompt to a different file",
         formatter_class=argparse.RawTextHelpFormatter
     )

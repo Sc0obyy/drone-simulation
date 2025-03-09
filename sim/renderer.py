@@ -1,6 +1,4 @@
 import pygame
-import numpy as np
-import matplotlib.pyplot as plt
 import settings
 from sim.utils import value_to_color, to_screen_coords
 from sim.coverage import Coverage
