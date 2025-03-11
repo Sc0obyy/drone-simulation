@@ -1,0 +1,6 @@
+lua
+pygame
+argparse
+lupa
+numpy
+matplotlib
