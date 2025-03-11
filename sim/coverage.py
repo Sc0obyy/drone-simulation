@@ -4,16 +4,40 @@ import settings
 from sim.utils import rotate_point, value_to_color, to_screen_coords
 
 class Coverage:
+    """
+    Class to manage and calculate coverage and overlap on a 2D grid.
+    """
+
     def __init__(self):
+        """
+        Initializes the coverage map with NaN values.
+        """
         self.coverage_map = np.empty([settings.WIDTH, settings.HEIGHT])
         self.coverage_map[:] = np.nan
 
     def add_rectangle_boundary_to_coverage_map_n(self, min_x: int, max_x: int, min_y: int, max_y: int) -> None:
+        """
+        Adds a rectangular boundary to the coverage map.
+
+        Args:
+            min_x (int): Minimum x-coordinate of the rectangle.
+            max_x (int): Maximum x-coordinate of the rectangle.
+            min_y (int): Minimum y-coordinate of the rectangle.
+            max_y (int): Maximum y-coordinate of the rectangle.
+        """
         for x in range(min_x, max_x + 1):
             for y in range(min_y, max_y + 1):
                 self.coverage_map[int(x), int(y)] = 0
 
     def add_circle_boundary_to_coverage_map_n(self, x: float, y: float, radius: float) -> None:
+        """
+        Adds a circular boundary to the coverage map.
+
+        Args:
+            x (float): x-coordinate of the circle center.
+            y (float): y-coordinate of the circle center.
+            radius (float): Radius of the circle.
+        """
         point = (x, y)
         point = to_screen_coords(point)
         x, y = point
@@ -23,6 +47,12 @@ class Coverage:
                     self.coverage_map[int(i), int(j)] = 0
 
     def add_photos_to_coverage_map_n(self, photos: list) -> None:
+        """
+        Adds photos to the coverage map.
+
+        Args:
+            photos (list): List of photos, each represented by a tuple (center, angle).
+        """
         for photo in photos:
             center = photo[0]
             center = to_screen_coords(center)
@@ -39,8 +69,14 @@ class Coverage:
                 x, y = p
                 if self.coverage_map[int(x), int(y)] >= 0:
                     self.coverage_map[int(x), int(y)] += 1
-    
+
     def calculate_coverage_n(self, screen) -> None:
+        """
+        Calculates and displays the coverage percentage on the screen.
+
+        Args:
+            screen: Pygame screen object to draw the coverage.
+        """
         area = 0
         coverCount = 0
         for (i, j), value in np.ndenumerate(self.coverage_map):
@@ -54,6 +90,9 @@ class Coverage:
         print(f"Coverage: {coverage}%")
 
     def calculate_overlap_n(self) -> None:
+        """
+        Calculates and displays the overlap percentage.
+        """
         coveredArea = 0
         overlapCount = 0
         for (i, j), value in np.ndenumerate(self.coverage_map):
@@ -63,6 +102,5 @@ class Coverage:
                 coveredArea += 1
                 overlapCount += 1
         overlap = int((overlapCount / coveredArea) * 100) if overlapCount != 0 else 0
-        # overlap = int((coveredArea / overlapCount) * 100) if overlapCount != 0 else 0
         print(f"Overlap: {overlap}%")
         pygame.display.update()

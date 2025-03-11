@@ -4,7 +4,23 @@ from sim.utils import value_to_color, to_screen_coords
 from sim.coverage import Coverage
 
 class DroneRenderer:
+    """
+    A class to render the drone simulation using Pygame.
+    
+    Attributes:
+        flight (DroneFlight): The flight object controlling the drone, containing photos, path, and position.
+        screen: The Pygame display surface.
+        boundary_shape: The shape of the boundary (circle or rectangle).
+        boundary_params: The parameters defining the boundary.
+        coverage: The coverage object to calculate coverage and overlap.
+    """
     def __init__(self, flight):
+        """
+        Initializes the DroneRenderer with flight data and Pygame settings.
+        
+        Args:
+            flight (DroneFlight): The flight object controlling the drone, containing photos, path, and position.
+        """
         self.flight = flight
         pygame.init()
         self.screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
@@ -14,6 +30,9 @@ class DroneRenderer:
         self.coverage = Coverage()
     
     def draw(self) -> None:
+        """
+        Draws the entire simulation including photos, path, drone, and boundary.
+        """
         self.screen.fill(settings.BACKGROUND_COLOR)
         self.draw_photos()
         self.draw_path()
@@ -22,6 +41,9 @@ class DroneRenderer:
         pygame.display.update()
 
     def draw_photos(self) -> None:
+        """
+        Draws the photos taken by the drone on the screen.
+        """
         for photo in self.flight.photos:
             surf = pygame.Surface((settings.PHOTO_SIZE, settings.PHOTO_SIZE), pygame.SRCALPHA)
             pygame.draw.rect(surf, settings.PHOTO_COLOR, (0, 0, settings.PHOTO_SIZE, settings.PHOTO_SIZE))
@@ -30,19 +52,31 @@ class DroneRenderer:
             self.screen.blit(rot_surf, rot_rect.topleft)
 
     def draw_path(self) -> None:
+        """
+        Draws the path of the drone on the screen.
+        """
         for point in self.flight.path:
             pygame.draw.circle(self.screen, settings.PATH_COLOR, to_screen_coords(point), 1)
 
     def draw_drone(self) -> None:
+        """
+        Draws the current position of the drone on the screen.
+        """
         pygame.draw.circle(self.screen, (0, 0, 0), to_screen_coords(self.flight.position), 1)
 
     def draw_boundary(self) -> None:
+        """
+        Draws the boundary of the simulation area on the screen.
+        """
         if self.boundary_shape == 'circle':
             self.draw_circle_boundary()
         elif self.boundary_shape == 'rectangle':
             self.draw_rectangle_boundary()
 
     def draw_circle_boundary(self) -> None:
+        """
+        Draws a circular boundary on the screen and updates the coverage map.
+        """
         circle_center = to_screen_coords((self.boundary_params.get('x'), self.boundary_params.get('y')))
         circle_radius = self.boundary_params.get('radius')
         pygame.draw.circle(self.screen, (255, 0, 0), circle_center, circle_radius, 1)
@@ -51,6 +85,9 @@ class DroneRenderer:
                                                        circle_radius)
         
     def draw_rectangle_boundary(self) -> None:
+        """
+        Draws a rectangular boundary on the screen and updates the coverage map.
+        """
         rectangle_vertices = [
             self.boundary_params.get('v1'),
             self.boundary_params.get('v2'),
@@ -66,6 +103,18 @@ class DroneRenderer:
         self.coverage.add_rectangle_boundary_to_coverage_map_n(min_x, max_x, min_y, max_y)
 
     def draw_colorbar(self, x: int, y: int, width: int, height: int, min_val: int = 1, max_val: int = 10, cmap_name: str = "plasma") -> None:
+        """
+        Draws a colorbar on the screen to represent image count.
+        
+        Args:
+            x: The x-coordinate of the colorbar.
+            y: The y-coordinate of the colorbar.
+            width: The width of the colorbar.
+            height: The height of the colorbar.
+            min_val: The minimum value of the colorbar.
+            max_val: The maximum value of the colorbar.
+            cmap_name: The name of the colormap to use.
+        """
         pygame.font.init()
         title = pygame.font.SysFont("Arial", 20).render("Image count", True, (0, 0, 0))
         self.screen.blit(title, (x, y - 25))
@@ -79,6 +128,9 @@ class DroneRenderer:
             pygame.draw.line(self.screen, color, (x, y + j), (x + width, y + j))
 
     def print_info(self) -> None:
+        """
+        Prints the flight information and calculates coverage and overlap.
+        """
         minutes = int(self.flight.flight_time // 60)
         seconds = int(self.flight.flight_time % 60)
         print("\n################################\n")
@@ -89,6 +141,9 @@ class DroneRenderer:
         print("\n################################\n")
 
     def wait_for_exit(self) -> None:
+        """
+        Waits for the user to press any key to exit the simulation.
+        """
         print("Simulation complete. Press any key to exit...")
         waiting = True
         while waiting:

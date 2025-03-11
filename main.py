@@ -7,6 +7,11 @@ from tools.lua_runner import LuaRunner
 from sim.utils import to_screen_coords
 
 def main_simulation():
+    """
+    Main function to run the drone simulation.
+    Initializes the flight and renderer objects, executes the Lua script,
+    and runs the main simulation loop until the flight ends.
+    """
     # Initialize flight and renderer objects
     flight = DroneFlight()
     renderer = DroneRenderer(flight)
@@ -40,13 +45,26 @@ def main_simulation():
     pygame.quit()
 
 def run_prompt(settings_file=None, output_file="prompt.txt"):
+    """
+    Function to create a prompt based on the settings file.
+    
+    Args:
+        settings_file (str): Path to the custom settings file. Defaults to None.
+        output_file (str): Path to the output file where the prompt will be saved. Defaults to "prompt.txt".
+    """
     from tools.prompt import create_prompt
     create_prompt(settings_file, output_file)
 
 def parse_arguments():
+    """
+    Function to parse command-line arguments.
+    
+    Returns:
+        argparse.Namespace: Parsed command-line arguments.
+    """
     parser = argparse.ArgumentParser(
         description="Drone Simulator Application\n\n"
-                    "By default (no arguments), the simualtion will run with settings from settings.py",
+                    "By default (no arguments), the simulation will run with settings from settings.py",
         epilog="Example usage:\n"
                 " python main.py           # Runs the simulation\n"
                 " python main.py --prompt  # Creates a prompt with setting from settings.py\n"

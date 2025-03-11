@@ -1,15 +1,37 @@
 from settings import *
 import importlib.util
 
+"""
+This file is used to make generating a prompt easier by providing global variables that can be changed to change the prompt.
+"""
+
 def load_settings(settings_file="settings.py"):
+    """
+    Load settings from a specified settings file.
+
+    Args:
+        settings_file (str): The path to the settings file. Defaults to "settings.py".
+
+    Returns:
+        module: The loaded settings module.
+    """
     spec = importlib.util.spec_from_file_location("settings", settings_file)
     settings = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(settings)
     return settings
 
-# This file makes generating a prompt easyer by providing global variables that can be changed to change the prompt
-
 def create_prompt(settings_file=None, output_file="prompt.txt"):
+    """
+    Create a prompt for generating a Lua script with ChatGPT (DroneGPT) for a drone survey mission.
+
+    Args:
+        settings_file (str, optional): The path to the settings file. Defaults to None, which uses "settings.py".
+        output_file (str): The path to the output file where the prompt will be saved. Defaults to "prompt.txt".
+
+    Returns:
+        None
+    """
+
     settings = load_settings(settings_file if settings_file else "settings.py")
 
     BP = BOUNDARY_PARAMS # Shorten code below

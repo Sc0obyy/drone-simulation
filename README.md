@@ -56,6 +56,7 @@ The most important settings that might need to be changed for individual needs a
 
 - `SIMULATION_SPEED`: This variable sets the speed of the simulation. A value of `1` is real time.
 - `LUA_SCRIPT_PATH`: This variable lets you set the path for your lua script.
+- `PRINT_OUTPUT`: If enabled, all actions made by the drone (and lua script) will be printed.
 - `BOUNDARY_SHAPE`: Set the area shape of your targeted flight area. Possible values are: `circle` and `rectangle`
 - `BOUNDARY_PARAMS`: Set the variables for your area:
     - If your shape is a circle. The values `x` and `y` are the circle origin coordinates, and `radius` is the circles radius:
