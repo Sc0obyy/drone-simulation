@@ -20,13 +20,14 @@ def load_settings(settings_file="settings.py"):
     spec.loader.exec_module(settings)
     return settings
 
-def create_prompt(settings_file=None, output_file="prompt.txt"):
+def create_prompt(settings_file=None, output_file="prompt.txt", lua_file=None):
     """
     Create a prompt for generating a Lua script with ChatGPT (DroneGPT) for a drone survey mission.
 
     Args:
         settings_file (str, optional): The path to the settings file. Defaults to None, which uses "settings.py".
         output_file (str): The path to the output file where the prompt will be saved. Defaults to "prompt.txt".
+        lua_file (str, optional): The path to the existing Lua script file to be improved. Defaults to None.
 
     Returns:
         None
@@ -73,6 +74,13 @@ Functions:
 Instructions:
 Develop the Lua script to ensure the drone remains within the boundary throughout the flight. Select an efficient and effective pattern for surveying the designated area. Implement error handling for failed compass heading retrievals by attempting a retry before any critical operations. The script should respect the {FLIGHT_DURATION} minute flight duration limit, utilizing the pause_script_execution function to control the timing of flight adjustments.
 """
+    
+    if lua_file:
+        with open(lua_file, "r") as file:
+            lua_code = file.read()
+        prompt +="""
+Your task is to improve the existing Lua script by optimizing the flight path to ensure complete coverage of the designated area while minimizing unnecessary overlap in the captured photographs. You should also enhance the script to handle any potential errors that may arise during execution, such as failed compass heading retrievals. The script should be efficient, reliable, and capable of completing the survey mission within the specified time frame."""
+        prompt += lua_code
 
     with open(output_file, "w") as file:
         file.write(prompt)

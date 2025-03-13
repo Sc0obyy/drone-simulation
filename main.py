@@ -44,16 +44,17 @@ def main_simulation():
     renderer.wait_for_exit()
     pygame.quit()
 
-def run_prompt(settings_file=None, output_file="prompt.txt"):
+def run_prompt(settings_file=None, output_file="prompt.txt", lua_file=None):
     """
     Function to create a prompt based on the settings file.
     
     Args:
         settings_file (str): Path to the custom settings file. Defaults to None.
         output_file (str): Path to the output file where the prompt will be saved. Defaults to "prompt.txt".
+        lua_file (str, optional): Path to the existing Lua script file to be improved. Defaults to None.
     """
     from tools.prompt import create_prompt
-    create_prompt(settings_file, output_file)
+    create_prompt(settings_file, output_file, lua_file)
 
 def parse_arguments():
     """
@@ -69,17 +70,19 @@ def parse_arguments():
                 " python main.py           # Runs the simulation\n"
                 " python main.py --prompt  # Creates a prompt with setting from settings.py\n"
                 " python main.py --prompt -s custom_settings.py # Creates a prompt with custom settings\n"
-                " python main.py --prompt --output custom_prompt.txt  # Saves the prompt to a different file",
+                " python main.py --prompt --output custom_prompt.txt  # Saves the prompt to a different file\n"
+                " python main.py --prompt --improve existing_script.lua  # Improves an existing Lua script with given file",
         formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument("-p", "--prompt", action="store_true", help="Create the required Prompt (doesn't run simulation)")
     parser.add_argument("-s", "--settings", type=str, help="Specify a custom settings file (default: settings.py)")
     parser.add_argument("-o", "--output", type=str, default="prompt.txt", help="Specify output filename (default: prompt.txt)")
+    parser.add_argument("-i", "--improve", type=str, help="Improve the existing Lua script with given file")
     return parser.parse_args()
 
 if __name__ == '__main__':
     args = parse_arguments()
     if args.prompt:
-        run_prompt(args.settings, args.output)
+        run_prompt(args.settings, args.output, args.improve)
     else:
         main_simulation()
