@@ -37,8 +37,16 @@ python main.py --prompt
 You can specify a custom settings file and output file for the prompt:
 
 ```sh
-python main.py --prompt --settings custom_settings.py --output custom_prompt.txt
+python main.py --prompt --settings path/to/custom_settings.py --output path/to/custom_prompt.txt
 ```
+
+You can improve a pre-generated Lua script for the drone's flight path:
+
+```sh
+python main.py --prompt --improve path/to/lua_file.lua
+```
+
+Replace `path/to/lua_file.lua` with the actual path to your Lua script file. This will create a prompt with your lua code, demanding it to be improved.
 
 ## Example Lua Scripts
 
@@ -76,8 +84,39 @@ The most important settings that might need to be changed for individual needs a
             'v4': (0, -25)
         }
         ```
-> [!IMPORTANT] 
+> [!WARNING] 
 > Make sure, that the Boundary values, as well as the prompt settings are identical to the values found for the prompt used to create the lua script. 
+> Make sure, that the shapes and parameters are set correctly.
+
+## Usage with DroneGPT
+
+> [!NOTE]
+> This Procedure is nowhere near optimal, but it works and might be improved in the future.
+
+### Prerequisites
+
+- A version of DroneGPT installed on the android phone that supports copying the lua code. At the moment only [my forked version](https://github.com/Sc0obyy/DroneGPT) supports this feature, as it is not merged into the original repo.
+- The simulator software must be installed on your PC.
+- Google drive, or any similar cloud, is installed on the phone and PC.
+- The phone and PC have internet connection (to sync the files on the cloud)
+
+### Steps
+
+1. Create an experiment in the DroneGPT app as described in the documentation.
+2. Use the app to create a lua script.
+3. Press and hold the ChatGPT generated answer and copy the code.
+4. Switch into your cloud app, create/open a document and paste the lua code.
+5. On the PC, create a lua file and paste the lua code from the cloud into the file.
+6. Use this lua file to create a new prompt:\
+`python main.py -p -i path/to/lua_file.lua`\
+Ensure, that the settings file contains the same values as your experiment from DroneGPT
+7. Use the generated prompt to improve the flight path.
+8. If you are satisfied with the flight path, copy the lua code into a (new) file in the cloud.
+9. Copy the lua code from the cloud app, into DroneGPT with the instruction to use this code instead.
+10. Use the optimized code with the normal instructions from DroneGPT.
+
+> [!TIP]
+> You can skip steps 1-7 and generate the lua code on you PC, then follow the steps from step 8.
 
 ## Bachelor's Thesis
 
