@@ -32,13 +32,12 @@ def create_prompt(settings_file=None, output_file="prompt.txt", lua_file=None):
     Returns:
         None
     """
-
     settings = load_settings(settings_file if settings_file else "settings.py")
 
-    BP = BOUNDARY_PARAMS # Shorten code below
-    if BOUNDARY_SHAPE == 'circle':
-        areaDescription = f"circle with radius of {BP.get('radius', 0)} meters and center at the following coordinates ({BP.get('x', 0)}, {BP.get('y', 0)})"#.format(BP.get('radius', 0), BP.get('x', 0), BP.get('y', 0))
-    elif BOUNDARY_SHAPE == 'rectangle':
+    BP = settings.BOUNDARY_PARAMS # Access settings from the loaded module
+    if settings.BOUNDARY_SHAPE == 'circle':
+        areaDescription = f"circle with radius of {BP.get('radius', 0)} meters and center at the following coordinates ({BP.get('x', 0)}, {BP.get('y', 0)})"
+    elif settings.BOUNDARY_SHAPE == 'rectangle':
         areaDescription = f"rectangle with vertices at the following coordinates {BP.get('v1', (0, 0))}, {BP.get('v2', (0, 0))}, {BP.get('v3', (0, 0))}, and {BP.get('v4', (0, 0))}"
     else:
         print("Wrong boundary shape!")
@@ -57,12 +56,12 @@ Thoroughly survey the designated area and capture photographs periodically to en
 
 Drone Flight Constraints:
 - The drone must stay within designated boundaries, which for this task is a {areaDescription}
-- The total flight duration must not exceed {FLIGHT_DURATION} minutes.
-- The drone will maintain a constant height of {FLIGHT_HEIGHT} meters, has a gimbal with a pitch angle of {GIMBAL_ANGLE} degrees and a {CAMERA_FOV} FOV camera, which influence the frequency of photo captures.
-Note that the camera FOV of {CAMERA_FOV} refers only to the horizontal FOV. The drone can only capture images in an aspect ratio of 16:9. The resulting photos should be square, thus cropping the edges. The Photo will cover roughly 19x19m of area.
+- The total flight duration must not exceed {settings.FLIGHT_DURATION} minutes.
+- The drone will maintain a constant height of {settings.FLIGHT_HEIGHT} meters, has a gimbal with a pitch angle of {settings.GIMBAL_ANGLE} degrees and a {settings.CAMERA_FOV} FOV camera, which influence the frequency of photo captures.
+Note that the camera FOV of {settings.CAMERA_FOV} refers only to the horizontal FOV. The drone can only capture images in an aspect ratio of 16:9. The resulting photos should be square, thus cropping the edges. The Photo will cover roughly 19x19m of area.
 
 Functions:
-- `adjust_flight_parameters(xVelocity, yVelocity, yaw)`: controls the drone's flight direction. `xVelocity` with value range [{MIN_PITCH_ROLL_VALUE}, {MAX_PITCH_ROLL_VALUE}] controls velocity along the x-axis (positive values move the drone east, negative west), and `yVelocity` with value range [{MIN_PITCH_ROLL_VALUE}, {MAX_PITCH_ROLL_VALUE}] controls velocity along the y-axis (positive values move the drone north, negative south). `yaw` with value range [{MIN_YAW_VALUE}, {MAX_YAW_VALUE}] changes the drone's angular velocity (positive values rotate the drone clockwise, negative counterclockwise)
+- `adjust_flight_parameters(xVelocity, yVelocity, yaw)`: controls the drone's flight direction. `xVelocity` with value range [{settings.MIN_PITCH_ROLL_VALUE}, {settings.MAX_PITCH_ROLL_VALUE}] controls velocity along the x-axis (positive values move the drone east, negative west), and `yVelocity` with value range [{settings.MIN_PITCH_ROLL_VALUE}, {settings.MAX_PITCH_ROLL_VALUE}] controls velocity along the y-axis (positive values move the drone north, negative south). `yaw` with value range [{settings.MIN_YAW_VALUE}, {settings.MAX_YAW_VALUE}] changes the drone's angular velocity (positive values rotate the drone clockwise, negative counterclockwise)
 `xVelocity` and `yVelocity` are both in meters/s and yaw is in degrees/s. The drone maintains these flight parameters until they are changed by another call to this function. 
 - `pause_script_execution(duration)`: pauses the script execution for a specified duration in seconds. This function is typically used after setting flight parameters to maintain the drone’s current direction and speed for the specified period before the next script command is executed.
 - `get_distance_to_origin()`: retrieves the distance in meters from the drone’s current location to the origin of the coordinate system.
@@ -72,7 +71,7 @@ Functions:
 - `end_flight()`: instructs the drone to return to its starting point and terminate the flight.
 
 Instructions:
-Develop the Lua script to ensure the drone remains within the boundary throughout the flight. Select an efficient and effective pattern for surveying the designated area. Implement error handling for failed compass heading retrievals by attempting a retry before any critical operations. The script should respect the {FLIGHT_DURATION} minute flight duration limit, utilizing the pause_script_execution function to control the timing of flight adjustments.
+Develop the Lua script to ensure the drone remains within the boundary throughout the flight. Select an efficient and effective pattern for surveying the designated area. Implement error handling for failed compass heading retrievals by attempting a retry before any critical operations. The script should respect the {settings.FLIGHT_DURATION} minute flight duration limit, utilizing the pause_script_execution function to control the timing of flight adjustments.
 """
     
     if lua_file:
